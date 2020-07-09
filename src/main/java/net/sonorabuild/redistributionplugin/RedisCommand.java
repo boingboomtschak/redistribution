@@ -14,10 +14,13 @@ public class RedisCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (sender instanceof Player) {
             Player player = (Player) sender;
-            ItemStack diamond = new ItemStack(Material.DIAMOND, 5);
-            ItemStack bricks = new ItemStack(Material.BRICK);
-            bricks.setAmount(20);
-            player.getInventory().addItem(bricks, diamond);
+            if(args.length == 0){
+                player.sendMessage("§cNo subcommand specified!");
+            } else if(args[0].equalsIgnoreCase("vault")){
+                RedistributionPlugin.redisGui.openInventory(player);
+            } else {
+                player.sendMessage("§cUnknown subcommand!");
+            }
         }
         return true;
     }
