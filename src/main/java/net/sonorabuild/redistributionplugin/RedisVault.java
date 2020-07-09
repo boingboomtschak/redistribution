@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -14,10 +15,11 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.Arrays;
 
 public class RedisVault implements Listener {
-    private final Inventory[] inv = new Inventory[5];
+    private final Integer invNum = 5;
+    private final Inventory[] inv = new Inventory[invNum];
     public RedisVault() {
         for(int i=0; i<inv.length; i++){
-            inv[i] = Bukkit.createInventory(null, 54, String.format("Redistribution Vault %d", i+1));
+            inv[i] = Bukkit.createInventory(null, 54, String.format("Redistribution Vault | Page %d", i+1));
             initializeItems(inv[i]);
         }
     }
@@ -46,13 +48,40 @@ public class RedisVault implements Listener {
     // anti click/drag code here
     @EventHandler
     public void onInventoryClick(final InventoryClickEvent e) {
+        //RedistributionPlugin.logger.info("DEBUG WORKING");
+        Boolean correctInv = false;
+        for(int i=0; i<inv.length; i++){
+            if(e.getInventory() == inv[i]) {
+                correctInv = true;
+            }
+        }
+        if(!correctInv) return;
         final Player p = (Player) e.getWhoClicked();
-        if(e.getInventory() != p.getOpenInventory()) return;
-        if(e.getRawSlot() >= 45) {
+        if(e.getSlot() >= 45) {
             e.setCancelled(true);
         }
+        // prev/next page function
+        if(e.getSlot() == 45) {
+            p.sendMessage("Previous page"); //debug
+            Integer n;
+            p.openInventory(inv[4]);
+        } else if(e.getSlot() == 53) {
+            p.sendMessage("Next page"); //debug
+            Integer n;
+            p.openInventory(inv[1]);
+        }
+
         /*final ItemStack clickedItem = e.getCurrentItem();
         if(clickedItem == null || clickedItem.getType() == Material.AIR) return;*/
     }
+
+    /*@EventHandler
+    public void onInventoryClick(final InventoryDragEvent e){
+        for(int i=0; i<inv.length; i++){
+            if(e.getInventory() == inv[i]){
+                e.setCancelled(true);
+            }
+        }
+    }*/
 
 }
