@@ -6,12 +6,12 @@ public class RedistributionPlugin extends JavaPlugin {
     @Override
     public void onEnable() {
         getLogger().info("Enabling Redistribution plugin!");
-
+        this.getCommand("redis").setExecutor(new RedisCommand());
     }
 
     @Override
     public void onDisable() {
-        getLogger().info("Disabling Redistribution pluign!");
+        getLogger().info("Disabling Redistribution plugin!");
 
     }
 }
