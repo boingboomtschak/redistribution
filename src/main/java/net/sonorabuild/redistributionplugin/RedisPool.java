@@ -55,21 +55,17 @@ public class RedisPool implements Listener {
     public void onInventoryClick(final InventoryClickEvent e) {
         // check if clicked inventory is part of this pool, can be reduced to checking nth inventory
         // once next/prev page functions work
-        Boolean correctInv = false;
-        for(int i=0; i<inv.length; i++){
-            if(e.getInventory() == inv[i]) {
-                correctInv = true;
-            }
-        }
-        if(!correctInv) return;
-        // check if clicked slot is not a GUI item
         final Player p = (Player) e.getWhoClicked();
+        Integer n = current.get(p.getName());
+        if(e.getInventory() == inv[n]);
+
+        // check if clicked slot is not a GUI item
         if(e.getSlot() >= 45) {
             e.setCancelled(true);
         }
+
         // previous page function
         if(e.getSlot() == 45) {
-            Integer n = current.get(p.getName());
             if(n > 0) {
                 p.openInventory(inv[n-1]);
                 current.put(p.getName(), n-1);
@@ -78,17 +74,13 @@ public class RedisPool implements Listener {
             }
         // next page function
         } else if(e.getSlot() == 53) {
-            Integer n = current.get(p.getName());
-            p.sendMessage(n.toString());
-            if(n < inv.length-1) {
+            if(n+1 < inv.length) {
                 p.openInventory(inv[n+1]);
                 current.put(p.getName(), n+1);
             } else {
                 p.openInventory(inv[n]);
             }
         }
-        /*final ItemStack clickedItem = e.getCurrentItem();
-        if(clickedItem == null || clickedItem.getType() == Material.AIR) return;*/
     }
 
     /*@EventHandler
@@ -99,9 +91,4 @@ public class RedisPool implements Listener {
             }
         }
     }*/
-    @EventHandler
-    public void onInventoryClose(final InventoryCloseEvent e) {
-        final Player p = (Player) e.getPlayer();
-        current.put(p.getName(), 0);
-    }
 }

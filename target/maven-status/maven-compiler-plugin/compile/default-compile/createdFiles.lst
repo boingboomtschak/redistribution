@@ -1,3 +1,4 @@
+net\sonorabuild\redistributionplugin\RedisPoolManager.class
 net\sonorabuild\redistributionplugin\RedisPool.class
 net\sonorabuild\redistributionplugin\RedistributionPlugin.class
 net\sonorabuild\redistributionplugin\RedisCommand.class

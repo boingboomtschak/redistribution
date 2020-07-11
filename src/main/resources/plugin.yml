@@ -1,8 +1,8 @@
 name: Redistribution
-version: 0.0.2
+version: 0.0.3
 main: net.sonorabuild.redistributionplugin.RedistributionPlugin
 api-version: 1.16
 commands:
   redis:
-    description: Main command for 'Redistribution' plugin.
+    description: Main command for the 'Redistribution' plugin.
     usage: /redis

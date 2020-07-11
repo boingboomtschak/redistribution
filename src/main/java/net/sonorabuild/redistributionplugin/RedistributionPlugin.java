@@ -7,16 +7,13 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.logging.Logger;
 
 public class RedistributionPlugin extends JavaPlugin {
-    public static RedisPool redisGui;
+    public static RedisPoolManager poolManager;
     public static Logger logger;
 
     @Override
     public void onEnable() {
         logger = getLogger();
         logger.info("Enabling Redistribution plugin!");
-        redisGui = new RedisPool();
-        PluginManager pm = Bukkit.getPluginManager();
-        pm.registerEvents(redisGui, this);
         this.getCommand("redis").setExecutor(new RedisCommand());
     }
 
