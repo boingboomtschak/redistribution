@@ -56,8 +56,10 @@ public class RedisPool implements Listener {
         // check if clicked inventory is part of this pool, can be reduced to checking nth inventory
         // once next/prev page functions work
         final Player p = (Player) e.getWhoClicked();
+        p.sendMessage(p.getName()); // d
+        p.sendMessage(current.toString()); // d
         Integer n = current.get(p.getName());
-        if(e.getInventory() == inv[n]);
+        if(e.getInventory() != inv[n]) return;
 
         // check if clicked slot is not a GUI item
         if(e.getSlot() >= 45) {

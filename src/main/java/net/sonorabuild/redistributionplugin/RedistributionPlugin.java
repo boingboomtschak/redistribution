@@ -1,7 +1,7 @@
 package net.sonorabuild.redistributionplugin;
 
 import org.bukkit.Bukkit;
-import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.logging.Logger;
@@ -9,17 +9,24 @@ import java.util.logging.Logger;
 public class RedistributionPlugin extends JavaPlugin {
     public static RedisPoolManager poolManager;
     public static Logger logger;
+    public static Plugin instance;
 
     @Override
     public void onEnable() {
         logger = getLogger();
-        logger.info("Enabling Redistribution plugin!");
+        instance = this;
+        poolManager = new RedisPoolManager();
+        logger.info("Created pool manager!");
         this.getCommand("redis").setExecutor(new RedisCommand());
+        logger.info("Registered /redis command!");
     }
 
     @Override
     public void onDisable() {
         logger.info("Disabling Redistribution plugin!");
+    }
 
+    public static void registerPool(RedisPool pool) {
+        Bukkit.getPluginManager().registerEvents(pool, instance);
     }
 }
