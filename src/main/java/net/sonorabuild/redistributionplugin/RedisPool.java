@@ -7,17 +7,21 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Arrays;
+import java.util.HashMap;
 
-public class RedisVault implements Listener {
-    private final Integer invNum = 5;
-    private final Inventory[] inv = new Inventory[invNum];
-    public RedisVault() {
+public class RedisPool implements Listener {
+    private final Integer invDefaultMax = 10;
+    private final Inventory[] inv = new Inventory[invDefaultMax];
+    private HashMap<String, Integer> current = new HashMap<String, Integer>();
+
+    public RedisPool() {
         for(int i=0; i<inv.length; i++){
             inv[i] = Bukkit.createInventory(null, 54, String.format("Redistribution Vault | Page %d", i+1));
             initializeItems(inv[i]);
@@ -43,12 +47,14 @@ public class RedisVault implements Listener {
     }
     public void openInventory(final HumanEntity ent) {
         ent.openInventory(inv[0]);
+        current.put(ent.getName(), 0);
     }
 
     // anti click/drag code here
     @EventHandler
     public void onInventoryClick(final InventoryClickEvent e) {
-        //RedistributionPlugin.logger.info("DEBUG WORKING");
+        // check if clicked inventory is part of this pool, can be reduced to checking nth inventory
+        // once next/prev page functions work
         Boolean correctInv = false;
         for(int i=0; i<inv.length; i++){
             if(e.getInventory() == inv[i]) {
@@ -56,21 +62,31 @@ public class RedisVault implements Listener {
             }
         }
         if(!correctInv) return;
+        // check if clicked slot is not a GUI item
         final Player p = (Player) e.getWhoClicked();
         if(e.getSlot() >= 45) {
             e.setCancelled(true);
         }
-        // prev/next page function
+        // previous page function
         if(e.getSlot() == 45) {
-            p.sendMessage("Previous page"); //debug
-            Integer n;
-            p.openInventory(inv[4]);
+            Integer n = current.get(p.getName());
+            if(n > 0) {
+                p.openInventory(inv[n-1]);
+                current.put(p.getName(), n-1);
+            } else {
+                p.openInventory(inv[n]);
+            }
+        // next page function
         } else if(e.getSlot() == 53) {
-            p.sendMessage("Next page"); //debug
-            Integer n;
-            p.openInventory(inv[1]);
+            Integer n = current.get(p.getName());
+            p.sendMessage(n.toString());
+            if(n < inv.length-1) {
+                p.openInventory(inv[n+1]);
+                current.put(p.getName(), n+1);
+            } else {
+                p.openInventory(inv[n]);
+            }
         }
-
         /*final ItemStack clickedItem = e.getCurrentItem();
         if(clickedItem == null || clickedItem.getType() == Material.AIR) return;*/
     }
@@ -83,5 +99,9 @@ public class RedisVault implements Listener {
             }
         }
     }*/
-
+    @EventHandler
+    public void onInventoryClose(final InventoryCloseEvent e) {
+        final Player p = (Player) e.getPlayer();
+        current.put(p.getName(), 0);
+    }
 }
