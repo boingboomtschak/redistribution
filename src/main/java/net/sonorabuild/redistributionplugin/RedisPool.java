@@ -5,6 +5,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -12,6 +13,7 @@ import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.plugin.Plugin;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -20,8 +22,10 @@ public class RedisPool implements Listener {
     private final Integer invDefaultMax = 10;
     private final Inventory[] inv = new Inventory[invDefaultMax];
     private HashMap<String, Integer> current = new HashMap<String, Integer>();
+    private Plugin pluginRef;
 
-    public RedisPool() {
+    public RedisPool(Plugin plugin) {
+        pluginRef = plugin;
         for(int i=0; i<inv.length; i++){
             inv[i] = Bukkit.createInventory(null, 54, String.format("Redistribution Vault | Page %d", i+1));
             initializeItems(inv[i]);
@@ -45,9 +49,10 @@ public class RedisPool implements Listener {
         item.setItemMeta(meta);
         return item;
     }
-    public void openInventory(final HumanEntity ent) {
-        ent.openInventory(inv[0]);
-        current.put(ent.getName(), 0);
+    public void openInventory(final HumanEntity ent, final Integer n) {
+        ent.openInventory(inv[n]);
+        Bukkit.getPluginManager().registerEvents(this, pluginRef);
+        current.put(ent.getName(), n);
     }
 
     // anti click/drag code here
@@ -56,8 +61,6 @@ public class RedisPool implements Listener {
         // check if clicked inventory is part of this pool, can be reduced to checking nth inventory
         // once next/prev page functions work
         final Player p = (Player) e.getWhoClicked();
-        p.sendMessage(p.getName()); // d
-        p.sendMessage(current.toString()); // d
         Integer n = current.get(p.getName());
         if(e.getInventory() != inv[n]) return;
 
@@ -69,22 +72,24 @@ public class RedisPool implements Listener {
         // previous page function
         if(e.getSlot() == 45) {
             if(n > 0) {
-                p.openInventory(inv[n-1]);
+                openInventory(p, n-1);
                 current.put(p.getName(), n-1);
             } else {
-                p.openInventory(inv[n]);
+                openInventory(p, n);
             }
         // next page function
         } else if(e.getSlot() == 53) {
             if(n+1 < inv.length) {
-                p.openInventory(inv[n+1]);
+                openInventory(p, n+1);
                 current.put(p.getName(), n+1);
             } else {
-                p.openInventory(inv[n]);
+                openInventory(p, n);
             }
         }
     }
 
+    // need to figure out if this drag event is necessary - haven't found way to break the inventoryclickevent handler
+    // yet, so it may not be
     /*@EventHandler
     public void onInventoryClick(final InventoryDragEvent e){
         for(int i=0; i<inv.length; i++){
@@ -93,4 +98,19 @@ public class RedisPool implements Listener {
             }
         }
     }*/
+
+    @EventHandler
+    public void onInventoryClose(final InventoryCloseEvent e) {
+        Player p = (Player) e.getPlayer();
+        Boolean open = false;
+        Inventory top = p.getOpenInventory().getTopInventory();
+        for (int i=0; i<inv.length; i++) {
+            if(top == inv[i]){
+                open = true;
+            }
+        }
+        if (open) {
+            HandlerList.unregisterAll(this);
+        }
+    }
 }
