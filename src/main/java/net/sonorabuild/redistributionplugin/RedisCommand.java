@@ -13,11 +13,11 @@ public class RedisCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (sender instanceof Player) {
             Player player = (Player) sender;
-            if(args.length < 1){
-                player.sendMessage("§cNo subcommand specified!");
-            } else if(args[0].equalsIgnoreCase("pool")){
+            if(args.length < 1) {
+                printHelp(player);
+            } else if(args[0].equalsIgnoreCase("pool")) {
                 if (args.length < 2) {
-                    player.sendMessage("§cNo subcommand for pool specified!");
+                    printHelp(player, "pool");
                 } else if(args[1].equalsIgnoreCase("open")) {
                     if(args.length < 3) {
                         player.sendMessage("§cNo pool specified for open subcommand!");
@@ -54,13 +54,34 @@ public class RedisCommand implements CommandExecutor {
                             player.sendMessage(String.format("§cCouldn't delete pool %s!", args[2]));
                         }
                     }
+                } else if(args[1].equalsIgnoreCase("help")) {
+                    printHelp(player, "pool");
                 } else {
                     player.sendMessage("§cUnknown subcommand for pool!");
                 }
+            } else if(args[0].equalsIgnoreCase("help")) {
+                printHelp(player);
             } else {
                 player.sendMessage("§cUnknown subcommand!");
             }
         }
         return true;
+    }
+
+    private void printHelp(final Player player) {
+        player.sendMessage("§8-- §6Redistribution Help §8--");
+        player.sendMessage("§epool §8|§7 Subcommand to manipulate item pools");
+    }
+
+    private void printHelp(final Player player, final String topic) {
+        if(topic == "pool") {
+            player.sendMessage("§8-- §6Redistribution 'pool' Help §8--");
+            player.sendMessage("§epool create <name> §8|§7 Creates new item pool with set name");
+            player.sendMessage("§epool open <name>   §8|§7 Opens specified item pool by name");
+            player.sendMessage("§epool delete <name> §8|§7 Deletes item pool by name");
+            player.sendMessage("§epool list               §8|§7 Lists all existing item pools");
+        } else {
+            printHelp(player);
+        }
     }
 }
