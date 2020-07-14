@@ -54,6 +54,16 @@ public class RedisCommand implements CommandExecutor {
                             player.sendMessage(String.format("§cCouldn't delete pool %s!", args[2]));
                         }
                     }
+                } else if(args[1].equalsIgnoreCase("save")) {
+                    if(args.length < 3) {
+                        player.sendMessage("§cNo name for pool specified!");
+                    } else {
+                        if(RedistributionPlugin.poolManager.savePool(args[2])) {
+                            player.sendMessage(String.format("§aSuccessfully saved pool %s!", args[2]));
+                        } else {
+                            player.sendMessage(String.format("§cCouldn't save pool %s!", args[2]));
+                        }
+                    }
                 } else if(args[1].equalsIgnoreCase("help")) {
                     printHelp(player, "pool");
                 } else {

@@ -1,9 +1,13 @@
 package net.sonorabuild.redistributionplugin;
 
+import com.google.gson.Gson;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.plugin.Plugin;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -51,8 +55,37 @@ public class RedisPoolManager {
         // will deserialize pool inventories
     }
 
-    private void savePool(final String name) {
-        // complete
-        // will serialize selected pool's inventories to config files
+    public Boolean savePool(final String name){
+        try {
+            /*StringBuilder poolFilePath = new StringBuilder();
+            poolFilePath.append("plugins" + File.separator);
+            poolFilePath.append("Redistribution" + File.separator);
+            poolFilePath.append("pools" + File.separator);
+            poolFilePath.append(name + ".yml"); */
+            String poolFilePath = String.format("plugins/Redistribution/pools/%s.yml", name);
+            FileWriter poolFile = new FileWriter(poolFilePath);
+            poolFile.write(pools.get(name).serializePool(name));
+            poolFile.close();
+            return true;
+        } catch (IOException e) {
+            RedistributionPlugin.logger.severe(e.getMessage());
+            return false;
+        }
+
+
     }
+
+    public void saveAllPools() {
+        Boolean exception = false;
+        for (String name : pools.keySet()) {
+            if(!savePool(name)){
+                exception = true;
+            }
+        }
+        if(exception){
+            RedistributionPlugin.logger.severe("Error serializing all pools to files!");
+        }
+    }
+
+
 }

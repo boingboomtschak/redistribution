@@ -1,5 +1,6 @@
 package net.sonorabuild.redistributionplugin;
 
+import com.google.gson.Gson;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
@@ -53,6 +54,26 @@ public class RedisPool implements Listener {
         ent.openInventory(inv[n]);
         Bukkit.getPluginManager().registerEvents(this, pluginRef);
         current.put(ent.getName(), n);
+    }
+
+    public String serializePool(final String name) {
+        Gson poolJson = new Gson();
+        HashMap<Material, Integer> poolItems = new HashMap();
+        Inventory tempInv;
+        Integer curStack;
+        for(int i=0; i<inv.length; i++) {
+            tempInv = inv[i];
+            for(int j=0; j<tempInv.getSize(); j++) {
+                if(j < 45){
+                    ItemStack item = tempInv.getItem(j);
+                    if(item != null) {
+                        curStack = poolItems.getOrDefault(item.getType(), 0);
+                        poolItems.put(item.getType(), curStack + item.getAmount());
+                    }
+                }
+            }
+        }
+        return poolJson.toJson(poolItems);
     }
 
     // anti click/drag code here
