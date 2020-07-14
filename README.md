@@ -1,7 +1,7 @@
 # Redistribution
-[![Version image](https://img.shields.io/badge/Version-0.2.0-green)](https://github.com/d-mckee/redistribution/commits/master) ![Current size of plugin JAR](https://img.shields.io/github/size/d-mckee/redistribution/target/RedistributionPlugin-0.2.0.jar)
+[![Version image](https://img.shields.io/badge/Version-0.2.0-green)](https://github.com/d-mckee/redistribution/commits/master) [![Current size of plugin JAR](https://img.shields.io/github/size/d-mckee/redistribution/target/RedistributionPlugin-0.2.0.jar)](https://github.com/d-mckee/redistribution/tree/master/target)
 
-A plugin for Spigot/Paperspigot Java Edition Minecraft servers to redistribute the resources of banned players to the community. Currently in alpha stages to set up plugin, 
+A plugin for Spigot/Paperspigot Java Edition Minecraft servers to redistribute the resources of banned players to the community. Currently in alpha stages to create basic versions of planned plugin systems, and get to a working state. 
 
 ## Plugin Description
 
