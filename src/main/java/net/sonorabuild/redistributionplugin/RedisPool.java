@@ -16,8 +16,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 
-import java.util.Arrays;
-import java.util.HashMap;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class RedisPool implements Listener {
     private final Integer invDefaultMax = 10;
@@ -56,24 +56,40 @@ public class RedisPool implements Listener {
         current.put(ent.getName(), n);
     }
 
-    public String serializePool(final String name) {
+    // this is probably super inefficient and needs to be fixed as its triple nested loops - hash-mappable ItemStack
+    // might help with optimization, as well as parallelizing some of the inventory comprehension
+    public String serializePool() {
         Gson poolJson = new Gson();
-        HashMap<Material, Integer> poolItems = new HashMap();
+        List<ItemStack> poolItems = new ArrayList();
         Inventory tempInv;
-        Integer curStack;
-        for(int i=0; i<inv.length; i++) {
-            tempInv = inv[i];
-            for(int j=0; j<tempInv.getSize(); j++) {
-                if(j < 45){
+        ItemStack iterItem = null;
+        Boolean foundItem;
+        for (Inventory itemStacks : inv) {
+            tempInv = itemStacks;
+            for (int j=0; j<tempInv.getSize(); j++) {
+                if (j < 45) {
                     ItemStack item = tempInv.getItem(j);
-                    if(item != null) {
-                        curStack = poolItems.getOrDefault(item.getType(), 0);
-                        poolItems.put(item.getType(), curStack + item.getAmount());
+                    if (item != null) {
+                        Iterator poolIter = poolItems.listIterator();
+                        foundItem = false;
+                        while(poolIter.hasNext() && !foundItem){
+                            iterItem = (ItemStack) poolIter.next();
+                            if(item.isSimilar(iterItem)) { foundItem = true; }
+                        }
+                        if(!poolIter.hasNext() && !foundItem) {
+                            poolItems.add(item);
+                            //RedistributionPlugin.logger.warning(String.format("Added %s", item.getType().toString()));
+                        } else {
+                            iterItem.setAmount(iterItem.getAmount() + item.getAmount());
+                            //RedistributionPlugin.logger.warning(String.format("Increasing %s to %d", iterItem.getType().toString(), iterItem.getAmount()));
+
+                        }
                     }
                 }
             }
         }
-        return poolJson.toJson(poolItems);
+        List<Map<String, Object>> serializedPoolItems = poolItems.stream().parallel().map(i -> i.serialize()).collect(Collectors.toList());
+        return poolJson.toJson(serializedPoolItems);
     }
 
     // anti click/drag code here

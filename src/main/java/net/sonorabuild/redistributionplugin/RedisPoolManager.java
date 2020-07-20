@@ -57,22 +57,17 @@ public class RedisPoolManager {
 
     public Boolean savePool(final String name){
         try {
-            /*StringBuilder poolFilePath = new StringBuilder();
-            poolFilePath.append("plugins" + File.separator);
-            poolFilePath.append("Redistribution" + File.separator);
-            poolFilePath.append("pools" + File.separator);
-            poolFilePath.append(name + ".yml"); */
             String poolFilePath = String.format("plugins/Redistribution/pools/%s.yml", name);
+            File poolFileHolder = new File(poolFilePath);
+            poolFileHolder.createNewFile();
             FileWriter poolFile = new FileWriter(poolFilePath);
-            poolFile.write(pools.get(name).serializePool(name));
+            poolFile.write(pools.get(name).serializePool());
             poolFile.close();
             return true;
         } catch (IOException e) {
             RedistributionPlugin.logger.severe(e.getMessage());
             return false;
         }
-
-
     }
 
     public void saveAllPools() {

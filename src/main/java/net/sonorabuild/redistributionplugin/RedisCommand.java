@@ -90,6 +90,7 @@ public class RedisCommand implements CommandExecutor {
             player.sendMessage("§epool open <name>   §8|§7 Opens specified item pool by name");
             player.sendMessage("§epool delete <name> §8|§7 Deletes item pool by name");
             player.sendMessage("§epool list               §8|§7 Lists all existing item pools");
+            player.sendMessage("§epool save               §8|§7 Saves specified item pool by name");
         } else {
             printHelp(player);
         }

@@ -1,5 +1,5 @@
 # Redistribution
-[![Version image](https://img.shields.io/badge/Version-0.2.0-green)](https://github.com/d-mckee/redistribution/commits/master) [![Current size of plugin JAR](https://img.shields.io/github/size/d-mckee/redistribution/target/RedistributionPlugin-0.2.0.jar)](https://github.com/d-mckee/redistribution/tree/master/target)
+[![Version image](https://img.shields.io/badge/Version-0.2.1-green)](https://github.com/d-mckee/redistribution/commits/master) [![Current size of plugin JAR](https://img.shields.io/github/size/d-mckee/redistribution/target/RedistributionPlugin-0.2.1.jar)](https://github.com/d-mckee/redistribution/tree/master/target)
 
 A plugin for Spigot/Paperspigot Java Edition Minecraft servers to redistribute the resources of banned players to the community. Currently in alpha stages to create basic versions of planned plugin systems, and get to a working state. 
 
@@ -9,7 +9,6 @@ A plugin for Spigot/Paperspigot Java Edition Minecraft servers to redistribute t
 
 ## Current to-do list:
 
-- Add more advanced serialization of pool items (NBT data, etc.)
 - Add basic deserialization of pool items
 - Add advanced deserialization of pool items
 - Modify pool list command to indicate whether a pool is currently loaded or not
@@ -27,6 +26,7 @@ A plugin for Spigot/Paperspigot Java Edition Minecraft servers to redistribute t
 
 ## Version Changelog
 
+- 0.2.1: Advanced serialization of items with NBT data, format is temporary/may be cleaned up later.
 - 0.2.0: Basic serialization implementation without NBT data, reworking of repo readme.
 - 0.1.1: Set up help pages, both for main "/redis" command, as well as "/redis pool" subcommand
 - 0.1.0: Implementation of RedisPoolManager, allowing for multiple pools to be in memory simultaneously, as well as managing functions for specific pools.
