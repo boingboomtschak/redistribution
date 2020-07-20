@@ -57,7 +57,7 @@ public class RedisPoolManager {
 
     public Boolean savePool(final String name){
         try {
-            String poolFilePath = String.format("plugins/Redistribution/pools/%s.yml", name);
+            String poolFilePath = String.format("plugins/Redistribution/pools/%s.json", name);
             File poolFileHolder = new File(poolFilePath);
             poolFileHolder.createNewFile();
             FileWriter poolFile = new FileWriter(poolFilePath);

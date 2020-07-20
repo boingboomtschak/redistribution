@@ -1,6 +1,7 @@
 package net.sonorabuild.redistributionplugin;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
@@ -16,6 +17,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 
+import java.lang.reflect.Type;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -41,6 +43,13 @@ public class RedisPool implements Listener {
         inv.setItem(53, createGuiItem(Material.LIME_STAINED_GLASS_PANE, "§a§lNext Page"));
     }
 
+    private void clearInventory() {
+        for(Inventory tempInv : inv) {
+            tempInv.clear();
+            initializeItems(tempInv);
+        }
+    }
+
     // returns ItemStack with title and lore for GUi
     protected ItemStack createGuiItem(final Material material, final String name, final String... lore) {
         final ItemStack item = new ItemStack(material, 1);
@@ -61,11 +70,9 @@ public class RedisPool implements Listener {
     public String serializePool() {
         Gson poolJson = new Gson();
         List<ItemStack> poolItems = new ArrayList();
-        Inventory tempInv;
         ItemStack iterItem = null;
         Boolean foundItem;
-        for (Inventory itemStacks : inv) {
-            tempInv = itemStacks;
+        for (Inventory tempInv : inv) {
             for (int j=0; j<tempInv.getSize(); j++) {
                 if (j < 45) {
                     ItemStack item = tempInv.getItem(j);
@@ -90,6 +97,37 @@ public class RedisPool implements Listener {
         }
         List<Map<String, Object>> serializedPoolItems = poolItems.stream().parallel().map(i -> i.serialize()).collect(Collectors.toList());
         return poolJson.toJson(serializedPoolItems);
+    }
+
+    // issue: will currently throw errors if there aren't enough slots in all the inventories
+    public void deserializePool(final String poolJson){
+        // parsing of JSON string to List<Map<String, Object>> for ItemStack.deserialize() method
+        Gson gson = new Gson();
+        Type mapType = TypeToken.getParameterized(Map.class, String.class, Object.class).getType();
+        Type listType = TypeToken.getParameterized(List.class, mapType).getType();
+        List<Map<String, Object>> serializedPoolItems = gson.fromJson(poolJson, listType);
+        // deserialization of Map<String, Object> to ItemStack
+        List<ItemStack> poolItems = serializedPoolItems.stream().parallel().map(i -> new ItemStack(Material.STONE, 1).deserialize(i)).collect(Collectors.toList());
+        // unpacking poolItems to expanded list with separate ItemStacks for previous stacks exceeding max stack size
+        List<ItemStack> poolItemsUnpacked = new ArrayList();
+        ItemStack itemHolder;
+        for(ItemStack item : poolItems) {
+            while(item.getAmount() <= item.getMaxStackSize()){
+                itemHolder = item.clone();
+                item.setAmount(item.getAmount()-item.getMaxStackSize());
+            }
+            poolItemsUnpacked.add(item);
+        }
+        clearInventory();
+        Integer currentInv = 0;
+        Integer slot = 0;
+        for (ItemStack item : poolItemsUnpacked) {
+            if (slot >= 45) {
+                currentInv++;
+                slot = 0;
+            }
+            inv[currentInv].setItem(slot, item);
+        }
     }
 
     // anti click/drag code here
