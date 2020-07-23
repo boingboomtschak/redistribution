@@ -1,5 +1,5 @@
 # Redistribution
-[![Version image](https://img.shields.io/badge/Version-0.3.0-green)](https://github.com/d-mckee/redistribution/commits/master) [![Current size of plugin JAR](https://img.shields.io/github/size/d-mckee/redistribution/target/RedistributionPlugin-0.3.0.jar)](https://github.com/d-mckee/redistribution/tree/master/target)
+[![Version image](https://img.shields.io/badge/Version-0.3.1-green)](https://github.com/d-mckee/redistribution/commits/master) [![Current size of plugin JAR](https://img.shields.io/github/size/d-mckee/redistribution/target/RedistributionPlugin-0.3.1.jar)](https://github.com/d-mckee/redistribution/tree/master/target)
 
 A plugin for Spigot/Paperspigot Java Edition Minecraft servers to redistribute the resources of banned players to the community. Currently in alpha stages to create basic versions of planned plugin systems, and get to a working state. 
 
@@ -9,7 +9,6 @@ A plugin for Spigot/Paperspigot Java Edition Minecraft servers to redistribute t
 
 ## Current to-do list:
 
-- Modify pool list command to indicate whether a pool is currently loaded or not
 - Add command to sort pool, while pool is currently loaded
 - Extend pool sorting to unloaded pools
 - Add command to manually save pools, if need be
@@ -24,6 +23,7 @@ A plugin for Spigot/Paperspigot Java Edition Minecraft servers to redistribute t
 
 ## Version Changelog
 
+- 0.3.1: Listing of unloaded pools, alphabetic sorting of pools independent of loaded status
 - 0.3.0: Advanced deserialization of items with NBT data, pools can now be loaded/saved as needed (may be background tasks in future versions)
 - 0.2.1: Advanced serialization of items with NBT data, format is temporary/may be cleaned up later.
 - 0.2.0: Basic serialization implementation without NBT data, reworking of repo readme.

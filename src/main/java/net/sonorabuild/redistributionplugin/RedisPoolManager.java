@@ -13,6 +13,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Set;
 
 public class RedisPoolManager {
@@ -42,7 +43,21 @@ public class RedisPoolManager {
     }
 
     public Set<String> listPools() {
-        return pools.keySet();
+        Set<String> poolList = new HashSet<String>();
+        // add all loaded pools to set
+        poolList.addAll(pools.keySet());
+        // list unloaded pools and add to set
+        try {
+            File f = new File("plugins/Redistribution/pools");
+            for (String pool : f.list()) {
+                if(!pools.containsKey(pool.substring(0, pool.lastIndexOf('.')))) {
+                    poolList.add(String.format("%s (Unloaded)", pool.substring(0, pool.lastIndexOf('.'))));
+                }
+            }
+        } catch (Exception e) {
+            RedistributionPlugin.logger.severe(e.getMessage());
+        }
+        return poolList;
     }
 
     public Boolean deletePool(final String name){

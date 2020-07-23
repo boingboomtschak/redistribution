@@ -5,6 +5,9 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 
@@ -39,7 +42,9 @@ public class RedisCommand implements CommandExecutor {
                 } else if(args[1].equalsIgnoreCase("list")) {
                     Set<String> poolsSet = RedistributionPlugin.poolManager.listPools();
                     if(poolsSet != null && !poolsSet.isEmpty()) {
-                        String res = String.join(", ", poolsSet);
+                        List<String> poolsList = new ArrayList<String>(poolsSet);
+                        Collections.sort(poolsList);
+                        String res = String.join(", ", poolsList);
                         player.sendMessage("§aPools: " + res);
                     } else {
                         player.sendMessage("§cNo pools found!");
@@ -101,6 +106,7 @@ public class RedisCommand implements CommandExecutor {
             player.sendMessage("§epool delete <name> §8|§7 Deletes item pool by name");
             player.sendMessage("§epool list               §8|§7 Lists all existing item pools");
             player.sendMessage("§epool save               §8|§7 Saves specified item pool by name");
+            player.sendMessage("§epool load               §8|§7 Loads specified item pool by name");
         } else {
             printHelp(player);
         }
