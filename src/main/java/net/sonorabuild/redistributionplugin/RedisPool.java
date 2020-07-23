@@ -100,6 +100,7 @@ public class RedisPool implements Listener {
     }
 
     // issue: will currently throw errors if there aren't enough slots in all the inventories
+    // ideally will be resolved with implementation of pool resize or extend command
     public void deserializePool(final String poolJson){
         // parsing of JSON string to List<Map<String, Object>> for ItemStack.deserialize() method
         Gson gson = new Gson();
@@ -112,8 +113,10 @@ public class RedisPool implements Listener {
         List<ItemStack> poolItemsUnpacked = new ArrayList();
         ItemStack itemHolder;
         for(ItemStack item : poolItems) {
-            while(item.getAmount() <= item.getMaxStackSize()){
+            while(item.getAmount() > item.getMaxStackSize()){
                 itemHolder = item.clone();
+                itemHolder.setAmount(item.getMaxStackSize());
+                poolItemsUnpacked.add(itemHolder);
                 item.setAmount(item.getAmount()-item.getMaxStackSize());
             }
             poolItemsUnpacked.add(item);
@@ -127,6 +130,7 @@ public class RedisPool implements Listener {
                 slot = 0;
             }
             inv[currentInv].setItem(slot, item);
+            slot++;
         }
     }
 

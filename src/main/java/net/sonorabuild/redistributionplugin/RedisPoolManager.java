@@ -6,8 +6,12 @@ import org.bukkit.entity.HumanEntity;
 import org.bukkit.plugin.Plugin;
 
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -50,9 +54,19 @@ public class RedisPoolManager {
         }
     }
 
-    public void loadPool(final String name){
-        // complete
-        // will deserialize pool inventories
+    public Boolean loadPool(final String name){
+        try {
+            String poolFilePath = String.format("plugins/Redistribution/pools/%s.json", name);
+            String fileString = new String(Files.readAllBytes(Paths.get(poolFilePath)), StandardCharsets.UTF_8);
+            if(!pools.containsKey(name)){
+                createPool(name);
+            }
+            pools.get(name).deserializePool(fileString);
+            return true;
+        } catch (IOException e) {
+            RedistributionPlugin.logger.severe(e.getMessage());
+            return false;
+        }
     }
 
     public Boolean savePool(final String name){
